@@ -7,8 +7,8 @@ class ApartmentModel {
   final String rooms;
   final String floor;
   final String bathrooms;
-  final String apartmentImage;  
-  final String imageUrl;      
+  final String apartmentImage;
+  final String imageUrl;
 
   ApartmentModel({
     required this.id,
@@ -24,18 +24,37 @@ class ApartmentModel {
   });
 
   factory ApartmentModel.fromJson(Map<String, dynamic> json) {
-    final apartment = json['data']['apartment'];
+    final rawImage = json['apartment_image'];
+
+    String finalUrl = "";
+
+    if (rawImage != null && rawImage != "") {
+      String url = rawImage.toString();
+
+      // 🔥 استبدال كل الحالات المحتملة للمحاكي
+      url = url.replaceFirst("127.0.0.1", "10.0.2.2:8000");
+      url = url.replaceFirst("localhost", "10.0.2.2:8000");
+
+      // إذا الرابط كامل
+      if (url.startsWith("http")) {
+        finalUrl = url;
+      } else {
+        // إذا كان مجرد اسم ملف
+        finalUrl = "http://10.0.2.2:8000/storage/$url";
+      }
+    }
+
     return ApartmentModel(
-      id: apartment['id'],
-      city: apartment['city'],
-      governorate: apartment['Governorate'],
-      rentPrice: apartment['rent_price'],
-      apartmentSpace: apartment['apartment_space'],
-      rooms: apartment['rooms'],
-      floor: apartment['floor'],
-      bathrooms: apartment['bathrooms'],
-      apartmentImage: apartment['apartment_image'], 
-      imageUrl: json['data']['image_url'],         
+      id: json['id'],
+      city: json['city'] ?? '',
+      governorate: json['Governorate'] ?? '',
+      rentPrice: json['rent_price']?.toString() ?? '',
+      apartmentSpace: json['apartment_space']?.toString() ?? '',
+      rooms: json['rooms']?.toString() ?? '',
+      floor: json['floor']?.toString() ?? '',
+      bathrooms: json['bathrooms']?.toString() ?? '',
+      apartmentImage: rawImage ?? '',
+      imageUrl: finalUrl,
     );
   }
 }

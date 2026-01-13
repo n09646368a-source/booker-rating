@@ -58,6 +58,7 @@ class ProfileRepository {
       print("✅ Response status: ${response.statusCode}");
       print("✅ Response data: ${response.data}");
 
+      // ✅ هلا الموديل صار يقرأ الصور كمان
       final profile = ProfileResponceModel.fromJson(response.data);
 
       // 🟣 خزّني البروفايل محلياً

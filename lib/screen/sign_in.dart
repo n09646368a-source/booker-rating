@@ -178,61 +178,66 @@ class _Sign_inState extends State<Sign_in> {
 
                   const SizedBox(height: 40),
 
-                  // ================= SIGN IN BUTTON =================
                   BlocConsumer<SignInBloc, SignInState>(
                     listener: (context, state) {
                       if (state is SignInSuccessState) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(state.message)));
-
-                        // 🔥 الانتقال إلى صفحة الـ Home
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => const HomeScreen()),
-                        );
-                      } else if (state is SignInErrorState) {
-                        if (state.error.contains(
-                          "Invalid phone_number or password",
-                        )) {
-                          setState(() {
-                            _isPhoneError = true;
-                            _isPasswordError = true;
-                          });
+                        if (state.isApproved) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const HomeScreen(),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                "Your account is pending approval from Admin.",
+                              ),
+                            ),
+                          );
                         }
+                      }
 
+                      if (state is SignInErrorState) {
                         ScaffoldMessenger.of(
                           context,
                         ).showSnackBar(SnackBar(content: Text(state.error)));
                       }
                     },
+
                     builder: (context, state) {
                       return InkWell(
-                        onTap: () {
-                          setState(() {
-                            _isPhoneError = false;
-                            _isPasswordError = false;
-                          });
+                       onTap: () {
+  setState(() {
+    _isPhoneError = false;
+    _isPasswordError = false;
+  });
 
-                          if (Phone_Number.text.isEmpty ||
-                              Password.text.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Please fill in all the fields"),
-                              ),
-                            );
-                            return;
-                          }
+  if (Phone_Number.text.isEmpty || Password.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Please fill in all the fields"),
+      ),
+    );
+    return;
+  }
 
-                          Usermodel user = Usermodel(
-                            phone_number: Phone_Number.text,
-                            password: Password.text,
-                          );
+  // 🔥 هون بتحطيهم
+  final phone = Phone_Number.text.trim();
+  final pass = Password.text.trim();
 
-                          context.read<SignInBloc>().add(
-                            SubmitSignInEvent(user: user),
-                          );
-                        },
+  // 🔥 بعدين بتعملي إنشاء الـ user
+  Usermodel user = Usermodel(
+    phone_number: phone,
+    password: pass,
+  );
+
+  // 🔥 إرسال الحدث للبلوك
+  context.read<SignInBloc>().add(
+    SubmitSignInEvent(user: user),
+  );
+},
                         child: Container(
                           width: 327,
                           height: 52,

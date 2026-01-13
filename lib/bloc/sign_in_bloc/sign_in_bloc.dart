@@ -7,19 +7,22 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
   final SignInAuthService authService;
 
   SignInBloc(this.authService) : super(SignInInitState()) {
-    on<SubmitSignInEvent>((event, emit) async {
-      emit(SignInLoadingState());
-      try {
-        String result = await authService.signIn(event.user);
+   on<SubmitSignInEvent>((event, emit) async {
+  emit(SignInLoadingState());
+  try {
+    final result = await authService.signIn(event.user);
 
-        if (result == "Login successful") {
-          emit(SignInSuccessState(message: result));
-        } else {
-          emit(SignInErrorState(error: result));
-        }
-      } catch (e) {
-        emit(SignInErrorState(error: "Unexpected error: $e"));
-      }
-    });
+    if (result["message"] == "User logged in successfully") {
+      emit(SignInSuccessState(
+        message: result["message"],
+        isApproved: result["isApproved"],
+      ));
+    } else {
+      emit(SignInErrorState(error: result["message"]));
+    }
+  } catch (e) {
+    emit(SignInErrorState(error: "Unexpected error: $e"));
+  }
+});
   }
 }

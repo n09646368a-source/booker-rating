@@ -51,8 +51,14 @@ class Userinfo {
 
   String toJson() => json.encode(toMap());
 
-  factory Userinfo.fromJson(String source) => Userinfo.fromMap(json.decode(source) as Map<String, dynamic>);
-
+factory Userinfo.fromJson(Map<String, dynamic> json) {
+  return Userinfo(
+    phoneNumber: json['phone_number'] ?? '',
+    id: json.containsKey('user_id') ? int.tryParse(json['user_id'].toString()) ?? 0 : 0,
+createdAt: json['created_at'] ?? '',
+updatedAt: json['updated_at'] ?? '',
+  );
+}
   @override
   String toString() {
     return 'Userinfo(phoneNumber: $phoneNumber, createdAt: $createdAt, updatedAt: $updatedAt, id: $id)';

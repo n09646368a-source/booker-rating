@@ -18,7 +18,7 @@ class _splash_screenState extends State<splash_screen> {
         context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
-              on_boarding(),
+              OnBoarding(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             final fadeAnimation = CurvedAnimation(
               parent: animation,

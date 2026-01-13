@@ -20,12 +20,12 @@ class Usermodel {
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'phone_number': phone_number,
-      'password': password,
-      'password_confirmation': password_confirmation,
-    };
-  }
+  return {
+    'phone_number': phone_number?.toString() ?? '',
+    'password': password?.toString() ?? '',
+    'password_confirmation': password_confirmation?.toString() ?? '',
+  };
+}
 
   factory Usermodel.fromMap(Map<String, dynamic> map) {
     return Usermodel(

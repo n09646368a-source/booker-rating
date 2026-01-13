@@ -1,7 +1,7 @@
-import 'package:booker/service/apartment_service.dart';
+import 'package:booker/service/add_apartment_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:booker/bloc/apartment/apartment_event.dart';
-import 'package:booker/bloc/apartment/apartment_state.dart';
+import 'package:booker/bloc/add_apartment/add_apartment_event.dart';
+import 'package:booker/bloc/add_apartment/add_apartment_state.dart';
 
 class ApartmentBloc extends Bloc<ApartmentEvent, ApartmentState> {
   final ApartmentRepository repository;

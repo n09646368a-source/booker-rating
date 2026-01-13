@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class DetailWidget extends StatelessWidget {
+/*class DetailWidget extends StatelessWidget {
   const DetailWidget({
     super.key,
     required this.value,
@@ -29,4 +29,4 @@ class DetailWidget extends StatelessWidget {
       ],
     );
   }
-}
+}*/

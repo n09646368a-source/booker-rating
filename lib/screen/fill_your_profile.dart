@@ -11,15 +11,15 @@ import 'package:booker/bloc/profile_bloc/profile_event.dart';
 import 'package:booker/bloc/profile_bloc/profile_state.dart';
 import 'package:booker/service/profil_auth_service.dart';
 
-class fill_profile extends StatefulWidget {
+class FillProfile extends StatefulWidget {
   @override
-  State<fill_profile> createState() => _fill_profileState();
+  State<FillProfile> createState() => _FillProfileState();
 }
 
-class _fill_profileState extends State<fill_profile> {
-  final First_Name = TextEditingController();
-  final Last_Name = TextEditingController();
-  final Date_of_birth = TextEditingController();
+class _FillProfileState extends State<FillProfile> {
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final dateOfBirthController = TextEditingController();
 
   File? personalImage;
   File? idImage;
@@ -37,7 +37,7 @@ class _fill_profileState extends State<fill_profile> {
           "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
 
       setState(() {
-        Date_of_birth.text = formatted;
+        dateOfBirthController.text = formatted;
       });
     }
   }
@@ -72,9 +72,7 @@ class _fill_profileState extends State<fill_profile> {
       if (pickedFile != null) {
         final appDir = await getApplicationDocumentsDirectory();
         final fileName = path.basename(pickedFile.path);
-        final savedImage = await File(
-          pickedFile.path,
-        ).copy('${appDir.path}/$fileName');
+        final savedImage = await File(pickedFile.path).copy('${appDir.path}/$fileName');
 
         setState(() {
           if (isPersonal) {
@@ -94,15 +92,21 @@ class _fill_profileState extends State<fill_profile> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: const Color(0xFF7F56D9),
-          leading: IconButton(
+          centerTitle:true,
+          automaticallyImplyLeading: false,  
+         /* leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => Navigator.pop(context),
-          ),
+          ),*/
           title: const Text(
             "Fill Your Profile",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 20, 
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              
+              ),
           ),
-          centerTitle: true,
         ),
         body: BlocConsumer<VerifyProfileBloc, ProfileState>(
           listener: (context, state) {
@@ -118,9 +122,9 @@ class _fill_profileState extends State<fill_profile> {
             }
 
             if (state is ProfileFailure) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.error)));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.error)),
+              );
             }
           },
           builder: (context, state) {
@@ -130,6 +134,7 @@ class _fill_profileState extends State<fill_profile> {
                   children: [
                     const SizedBox(height: 49),
 
+                    // صورة شخصية
                     InkWell(
                       onTap: () => pickImage(true),
                       child: Stack(
@@ -147,11 +152,7 @@ class _fill_profileState extends State<fill_profile> {
                               radius: 50,
                               backgroundColor: Colors.grey.shade300,
                               child: personalImage == null
-                                  ? const Icon(
-                                      Icons.person,
-                                      size: 50,
-                                      color: Colors.white,
-                                    )
+                                  ? const Icon(Icons.person, size: 50, color: Colors.white)
                                   : ClipOval(
                                       child: Image.file(
                                         personalImage!,
@@ -169,10 +170,7 @@ class _fill_profileState extends State<fill_profile> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 2,
-                                ),
+                                border: Border.all(color: Colors.black, width: 2),
                               ),
                               child: const Icon(Icons.add, size: 20),
                             ),
@@ -183,30 +181,28 @@ class _fill_profileState extends State<fill_profile> {
 
                     const SizedBox(height: 61),
 
-                    buildTextField("First Name", First_Name),
+                    buildTextField("First Name", firstNameController),
                     const SizedBox(height: 21),
-                    buildTextField("Last Name", Last_Name),
+                    buildTextField("Last Name", lastNameController),
                     const SizedBox(height: 21),
 
                     InkWell(
                       onTap: pickDate,
                       child: IgnorePointer(
-                        child: buildTextField("Date of birth", Date_of_birth),
+                        child: buildTextField("Date of birth", dateOfBirthController),
                       ),
                     ),
 
                     const SizedBox(height: 21),
 
+                    // صورة الهوية
                     InkWell(
                       onTap: () => pickImage(false),
                       child: Container(
                         width: 327,
                         height: 120,
                         decoration: BoxDecoration(
-                          border: Border.all(
-                            color: const Color(0xFF7F56D9),
-                            width: 1.5,
-                          ),
+                          border: Border.all(color: const Color(0xFF7F56D9), width: 1.5),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: idImage == null
@@ -215,11 +211,7 @@ class _fill_profileState extends State<fill_profile> {
                                 children: const [
                                   Padding(
                                     padding: EdgeInsets.all(12.0),
-                                    child: Icon(
-                                      Icons.camera_alt,
-                                      size: 20,
-                                      color: Colors.grey,
-                                    ),
+                                    child: Icon(Icons.camera_alt, size: 20, color: Colors.grey),
                                   ),
                                   Text(
                                     "Add ID Image",
@@ -244,26 +236,25 @@ class _fill_profileState extends State<fill_profile> {
 
                     const SizedBox(height: 63),
 
+                    // زر Continue
                     InkWell(
                       onTap: () {
-                        if (First_Name.text.isEmpty ||
-                            Last_Name.text.isEmpty ||
-                            Date_of_birth.text.isEmpty ||
+                        if (firstNameController.text.isEmpty ||
+                            lastNameController.text.isEmpty ||
+                            dateOfBirthController.text.isEmpty ||
                             personalImage == null ||
                             idImage == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Please fill all fields"),
-                            ),
+                            const SnackBar(content: Text("Please fill all fields")),
                           );
                           return;
                         }
 
                         context.read<VerifyProfileBloc>().add(
                           SubmitProfileEvent(
-                            firstName: First_Name.text.trim(),
-                            lastName: Last_Name.text.trim(),
-                            dateOfBirth: Date_of_birth.text.trim(),
+                            firstName: firstNameController.text.trim(),
+                            lastName: lastNameController.text.trim(),
+                            dateOfBirth: dateOfBirthController.text.trim(),
                             personalImage: personalImage!,
                             idImage: idImage!,
                           ),
@@ -278,15 +269,10 @@ class _fill_profileState extends State<fill_profile> {
                         ),
                         child: Center(
                           child: state is ProfileLoading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
+                              ? const CircularProgressIndicator(color: Colors.white)
                               : const Text(
                                   "Continue",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                  ),
+                                  style: TextStyle(color: Colors.white, fontSize: 18),
                                 ),
                         ),
                       ),

@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class NotificationsScreen extends StatelessWidget {
+  const NotificationsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,13 +12,13 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF7F56D9),
         centerTitle: true,
         title: const Text(
-          "ProfileScreen",
+          "Notifications",
           style: TextStyle(color: Colors.white),
         ),
       ),
       body: const Center(
         child: Text(
-          "No ProfileScreen yet",
+          "No notifications yet",
           style: TextStyle(fontSize: 16),
         ),
       ),

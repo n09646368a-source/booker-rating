@@ -2,52 +2,79 @@ import 'package:booker/model/usermodel.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class SignInAuthService {
-  final Dio _dio = Dio();
+  final Dio _dio = Dio(
+    BaseOptions(
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      connectTimeout: Duration(seconds: 10),
+      receiveTimeout: Duration(seconds: 10),
+    ),
+  );
 
-  Future<String> signIn(Usermodel user) async {
+  Future<Map<String, dynamic>> signIn(Usermodel user) async {
     try {
+      // 🔥 طباعة الريسبونس الخام لمعرفة المشكلة الحقيقية
+      print("📤 Sending: ${user.toMap()}");
+
       final response = await _dio.post(
         "http://10.0.2.2:8000/api/login",
-        data: user.toJson(),
+        data: user.toMap(),
       );
 
-      if (response.statusCode == 200) {
-        final token = response.data['data']['token'];
+      print("🔥 RAW RESPONSE TYPE: ${response.data.runtimeType}");
+      print("🔥 RAW RESPONSE: ${response.data}");
 
+      // 🔥 إذا الريسبونس مو Map → يعني HTML → خطأ من السيرفر
+      if (response.data is! Map) {
+        return {
+          "message": "Server returned invalid response format",
+          "isApproved": false,
+        };
+      }
+
+      final data = response.data;
+
+      // 🔥 نجاح
+      if (response.statusCode == 200 && data["success"] == true) {
+        final token = data["data"]["token"];
+        final userJson = data["data"]["user"];
+
+        final isApproved =
+            userJson["is_approved"].toString() == "1" ||
+            userJson["is_approved"].toString().toLowerCase() == "true";
+
+        // حفظ التوكن
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
 
-        return response.data['message'] ?? "Login successful";
-      } else {
-        return "Login failed (code: ${response.statusCode})";
+        return {
+          "message": data["message"] ?? "Login successful",
+          "isApproved": isApproved,
+        };
       }
+
+      // 🔥 خطأ من السيرفر
+      return {
+        "message": data["message"] ?? "Login failed",
+        "isApproved": false,
+      };
     } on DioException catch (e) {
-      final status = e.response?.statusCode;
-      final data = e.response?.data;
+      print("❌ Dio Error: ${e.response?.data}");
 
-      if (status == 403 && data is Map && data['message'] != null) {
-        return data['message'];
-      } else if (status == 401 && data is Map && data['message'] != null) {
-        return data['message']; 
-      } else if (status == 500) {
-        return "Server error, please try again later";
-      }
-
-      return "Error: ${e.message}";
+      return {
+        "message": e.response?.data["message"] ?? "Network error",
+        "isApproved": false,
+      };
     } catch (e) {
-      return "Unexpected error: $e";
+      print("❌ Unexpected Error: $e");
+
+      return {
+        "message": "Unexpected error: $e",
+        "isApproved": false,
+      };
     }
-  }
-
-  Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token');
-  }
-
-  Future<void> clearToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('auth_token');
   }
 }

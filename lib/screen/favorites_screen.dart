@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class FavoritesScreen extends StatelessWidget {
@@ -5,6 +7,21 @@ class FavoritesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text('Favorites Screen')));
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF7F56D9),
+        centerTitle: true,
+        title: const Text(
+          "FavoritesScreen",
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+      body: const Center(
+        child: Text(
+          "No Favorites yet",
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+    );
   }
 }

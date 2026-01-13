@@ -1,7 +1,7 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:booker/bloc/profile_bloc/profile_event.dart';
 import 'package:booker/bloc/profile_bloc/profile_state.dart';
 import 'package:booker/service/profil_auth_service.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class VerifyProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final ProfileRepository repository;
@@ -17,7 +17,7 @@ class VerifyProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           personalImage: event.personalImage,
           idImage: event.idImage,
         );
-        emit(ProfileSuccess(result));
+        emit(ProfileSuccess(result)); // ✅ يرجع الموديل مع الصور
       } catch (e) {
         emit(ProfileFailure(e.toString()));
       }

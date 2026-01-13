@@ -10,15 +10,14 @@ class ApartmentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    print("🔍 رابط الصورة المستلم من الـ API: ${model.apartmentImage}");
+    print("🔍 رابط الصورة المستلم من الـ API: ${model.imageUrl}");
 
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ApartmentDetailsScreen(model: model),
+            builder: (_) => ApartmentDetailsScreen(apartmentId: model.id),
           ),
         );
       },
@@ -28,9 +27,11 @@ class ApartmentWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(12),
+              ),
               child: CachedNetworkImage(
-                imageUrl: model.apartmentImage,
+                imageUrl: model.imageUrl,
                 height: 120,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -46,10 +47,14 @@ class ApartmentWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("ID: ${model.id}", style: const TextStyle(fontSize: 12)),
-                  Text("${model.city}, ${model.governorate}",
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text("${model.rentPrice} SYP",
-                      style: const TextStyle(color: Colors.purple)),
+                  Text(
+                    "${model.city}, ${model.governorate}",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "${model.rentPrice} SYP",
+                    style: const TextStyle(color: Colors.purple),
+                  ),
                 ],
               ),
             ),

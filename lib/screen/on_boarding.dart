@@ -2,10 +2,25 @@ import 'package:booker/screen/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-PageController controller = PageController();
+class OnBoarding extends StatefulWidget {
+  const OnBoarding({super.key});
 
-class on_boarding extends StatelessWidget {
-  const on_boarding({super.key});
+  @override
+  State<OnBoarding> createState() => _OnBoardingState();
+}
+
+class _OnBoardingState extends State<OnBoarding> {
+  final PageController controller = PageController();
+  int currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(() {
+      // نستخدم onPageChanged بدل controller.page لتفادي الاكسبشن
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,46 +29,52 @@ class on_boarding extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: InkWell(
-              onTap: () {
-                controller.animateToPage(
-                  2,
-                  duration: const Duration(seconds: 1),
-                  curve: Curves.ease,
-                );
-              },
-              child: Container(
-                width: 57,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: const Color.fromRGBO(229, 231, 235, 1),
-                    width: 2,
+          if (currentPage == 0) //  زر Skip يظهر فقط بالصفحة الأولى
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: InkWell(
+                onTap: () {
+                  controller.animateToPage(
+                    2, // ينتقل مباشرة لآخر صفحة
+                    duration: const Duration(milliseconds: 600),
+                    curve: Curves.ease,
+                  );
+                },
+                child: Container(
+                  width: 57,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color:  Color.fromRGBO(127, 86, 217, 1),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color:   Color.fromRGBO(127, 86, 217, 1),
+                      width: 2,
+                    ),
                   ),
-                ),
-                child: const Center(
-                  child: Text(
-                    "Skip",
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: Color.fromRGBO(77, 87, 97, 1),
+                  child: const Center(
+                    child: Text(
+                      "Skip",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
       body: PageView(
         controller: controller,
         physics: NeverScrollableScrollPhysics(),
-        children: [
+        onPageChanged: (index) {
+          setState(() {
+            currentPage = index; //  نخزن رقم الصفحة الحالية
+          });
+        },
+     children: [
           Scaffold(
             body: Center(
               child: Column(
@@ -148,7 +169,6 @@ class on_boarding extends StatelessWidget {
                   SizedBox(height: 54),
                   InkWell(
                     onTap: () {
-                      //controller.jumpToPage(1);
                       controller.animateToPage(
                         1,
                         duration: Duration(seconds: 1),
@@ -207,7 +227,7 @@ class on_boarding extends StatelessWidget {
                               color: Color.fromRGBO(31, 42, 55, 1),
                             ),
                           ),
-                          TextSpan(text: "               "),
+                          TextSpan(text: "             "),
                           TextSpan(
                             text: "in just",
                             style: TextStyle(
@@ -274,7 +294,7 @@ class on_boarding extends StatelessWidget {
                   SizedBox(height: 54),
                   InkWell(
                     onTap: () {
-                      //controller.jumpToPage(1);
+                     
                       controller.animateToPage(
                         2,
                         duration: Duration(seconds: 1),
@@ -342,7 +362,7 @@ class on_boarding extends StatelessWidget {
                               color: Color.fromRGBO(31, 42, 55, 1),
                             ),
                           ),
-                          TextSpan(text: "          "),
+                          TextSpan(text: "                        "),
                           TextSpan(
                             text: " with us",
                             style: TextStyle(
@@ -371,7 +391,7 @@ class on_boarding extends StatelessWidget {
                               color: const Color.fromRGBO(157, 164, 174, 1),
                             ),
                           ),
-                          TextSpan(text: "             "),
+                          TextSpan(text: "                    "),
                           TextSpan(
                             text: "you want to locate",
                             style: TextStyle(

@@ -1,5 +1,3 @@
-
-import 'package:booker/screen/home_screen.dart';
 import 'package:booker/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 

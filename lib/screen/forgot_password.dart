@@ -25,7 +25,18 @@ class _EnterPhoneScreenState extends State<EnterPhoneScreen> {
     return BlocProvider(
       create: (_) => SendOtpBloc(ForgetPasswordService()),
       child: Scaffold(
-        appBar: AppBar(title: Text("Forgot Password")),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF7F56D9),
+          title: Text(
+            "Forgot Password",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+          centerTitle: true,
+        ),
         body: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(

@@ -6,7 +6,12 @@ class VerifyLoadingState extends VerifyState {}
 
 class VerifySuccessState extends VerifyState {
   final String message;
-  VerifySuccessState({required this.message, required token});
+  final String token;
+
+  VerifySuccessState({
+    required this.message,
+    required this.token,
+  });
 }
 
 class VerifyErrorState extends VerifyState {

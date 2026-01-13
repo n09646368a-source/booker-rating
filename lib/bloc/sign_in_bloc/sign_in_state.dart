@@ -6,7 +6,9 @@ class SignInLoadingState extends SignInState {}
 
 class SignInSuccessState extends SignInState {
   final String message;
-  SignInSuccessState({required this.message});
+  final bool isApproved;
+
+  SignInSuccessState({required this.message, required this.isApproved});
 }
 
 class SignInErrorState extends SignInState {
