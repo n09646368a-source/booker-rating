@@ -1,3 +1,4 @@
+
 import 'package:booker/service/home_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:booker/bloc/home/home_event.dart';
@@ -11,6 +12,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(HomeLoading());
       try {
         final apartments = await service.fetchApartments();
+        emit(HomeLoaded(apartments));
+      } catch (e) {
+        emit(HomeError(e.toString()));
+      }
+    });
+
+    on<FilterApartments>((event, emit) async {
+      emit(HomeLoading());
+      try {
+        final apartments = await service.filterApartments(event.toJson());
         emit(HomeLoaded(apartments));
       } catch (e) {
         emit(HomeError(e.toString()));

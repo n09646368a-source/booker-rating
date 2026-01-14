@@ -1,14 +1,15 @@
 import 'dart:io';
 import 'package:booker/screen/home_screen.dart';
+import 'package:booker/screen/sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
-import 'package:booker/bloc/profile_bloc/profile_bloc.dart';
-import 'package:booker/bloc/profile_bloc/profile_event.dart';
-import 'package:booker/bloc/profile_bloc/profile_state.dart';
+import 'package:booker/bloc/fill_profile_bloc/profile_bloc.dart';
+import 'package:booker/bloc/fill_profile_bloc/profile_event.dart';
+import 'package:booker/bloc/fill_profile_bloc/profile_state.dart';
 import 'package:booker/service/profil_auth_service.dart';
 
 class FillProfile extends StatefulWidget {
@@ -117,7 +118,7 @@ class _FillProfileState extends State<FillProfile> {
 
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (_) => HomeScreen()),
+                MaterialPageRoute(builder: (_) => Sign_in()),
               );
             }
 

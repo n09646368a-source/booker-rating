@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:booker/bloc/profile_bloc/profile_event.dart';
-import 'package:booker/bloc/profile_bloc/profile_state.dart';
+import 'package:booker/bloc/fill_profile_bloc/profile_event.dart';
+import 'package:booker/bloc/fill_profile_bloc/profile_state.dart';
 import 'package:booker/service/profil_auth_service.dart';
 
 class VerifyProfileBloc extends Bloc<ProfileEvent, ProfileState> {

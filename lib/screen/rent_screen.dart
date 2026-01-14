@@ -85,9 +85,18 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Select Rent Dates"),
-          backgroundColor: const Color(0xFF7F56D9),
           centerTitle: true,
+          leading: BackButton(color: Colors.white), // النص بالنص
+          title: const Text(
+            "Select Rent Dates",style: TextStyle(
+              fontSize: 20, 
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              
+              ),
+          ),
+          backgroundColor: const Color(0xFF7F56D9),
+        
         ),
 
         body: Padding(
@@ -280,9 +289,19 @@ class ReviewSummaryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Review Summary"),
-        backgroundColor: const Color(0xFF7F56D9),
         centerTitle: true,
+          leading: BackButton(color: Colors.white), // النص بالنص
+        title: const Text("Review Summary",
+        style: TextStyle(
+              fontSize: 20, 
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              
+              ),
+        
+        ),
+        backgroundColor: const Color(0xFF7F56D9),
+        
       ),
 
       body: Padding(

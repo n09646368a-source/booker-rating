@@ -18,6 +18,7 @@ class ApartmentWidget extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (_) => ApartmentDetailsScreen(apartmentId: model.id),
+            //builder: (_) => ApartmentDetailsScreen(apartmentId: model.id),
           ),
         );
       },
@@ -64,3 +65,4 @@ class ApartmentWidget extends StatelessWidget {
     );
   }
 }
+

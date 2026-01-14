@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-/*class PriceModel {
+class PriceModel {
   final num value;
   final String unit;
 
@@ -18,4 +18,4 @@ import 'dart:convert';
 
   factory PriceModel.fromJson(String source) =>
       PriceModel.fromMap(json.decode(source) as Map<String, dynamic>);
-}*/
+}

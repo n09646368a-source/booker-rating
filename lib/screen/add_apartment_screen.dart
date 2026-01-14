@@ -50,7 +50,8 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: const Color.fromRGBO(127, 86, 217, 1), // موف
-          centerTitle: true, // النص بالنص
+          centerTitle: true,
+          leading: BackButton(color: Colors.white), // النص بالنص
           title: const Text(
             "Add Apartment",
 style: TextStyle(

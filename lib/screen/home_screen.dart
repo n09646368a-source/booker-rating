@@ -1,15 +1,24 @@
-import 'package:booker/bloc/home/home_bloc.dart';
 import 'package:booker/bloc/home/home_event.dart';
 import 'package:booker/bloc/home/home_state.dart';
-import 'package:booker/screen/add_apartment_screen.dart';
-import 'package:booker/screen/favorites_screen.dart';
-import 'package:booker/screen/my_booking.dart';
-import 'package:booker/screen/notifications_screen.dart';
-import 'package:booker/screen/profile_screen.dart';
+import 'package:booker/bloc/reservation_bloc/reservation_bloc.dart';
+import 'package:booker/bloc/show_profile_bloc/show_profile_bloc.dart';
+import 'package:booker/screen/filters_screen.dart';
+import 'package:booker/screen/my_reservations_screen.dart';
+import 'package:booker/service/bookingreservation_server.dart';
 import 'package:booker/service/home_service.dart';
+import 'package:booker/service/show_profile_service.dart';
 import 'package:booker/ui_components/apartment_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart';
+
+import '../bloc/home/home_bloc.dart';
+
+import '../screen/add_apartment_screen.dart';
+import '../screen/favorites_screen.dart';
+import '../screen/notifications_screen.dart';
+import '../screen/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,6 +29,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
+
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString("auth_token");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
             body: SafeArea(
               child: BlocBuilder<HomeBloc, HomeState>(
                 builder: (context, state) {
+                  final bloc = context.read<HomeBloc>();
                   if (state is HomeLoading || state is HomeInitial) {
                     return const Center(child: CircularProgressIndicator());
                   }
@@ -42,10 +57,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // 🏠 اللوغو + اسم التطبيق + زر الإشعارات
                         Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -62,18 +78,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ],
                               ),
-
-                              // 🔔 زر الإشعارات
                               IconButton(
-                                icon: const Icon(Icons.notifications_none,
-                                    size: 28),
+                                icon: const Icon(
+                                  Icons.notifications_none,
+                                  size: 28,
+                                ),
                                 color: const Color(0xFF7F56D9),
                                 onPressed: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (_) =>
-                                            const NotificationsScreen()),
+                                      builder: (_) =>
+                                          const NotificationsScreen(),
+                                    ),
                                   ).then((_) {
                                     setState(() {
                                       currentIndex = 0;
@@ -84,18 +101,31 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                         ),
-
-                        // 🔍 Search + Filter
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: TextField(
                             decoration: InputDecoration(
                               hintText: 'Search property...',
-                              prefixIcon: const Icon(Icons.search,
-                                  color: Colors.purple),
+                              prefixIcon: const Icon(
+                                Icons.search,
+                                color: Colors.purple,
+                              ),
                               suffixIcon: IconButton(
                                 icon: const Icon(Icons.filter_list),
-                                onPressed: () {},
+                                onPressed: () async {
+                                  // فتح صفحة الفلتر، وانتظار العودة إلى هذه الصفحة لإرسال معلومات الفلترة
+                                  final event = await Navigator.of(context)
+                                      .push(
+                                        MaterialPageRoute(
+                                          builder: (context) => FiltersScreen(),
+                                        ),
+                                      );
+                                  if (event != null) {
+                                    bloc.add(event);
+                                  }
+
+                                  //bloc.add(event);
+                                },
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -103,10 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 20),
-
-                        // ⭐ Recommended
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
@@ -117,10 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 12),
-
-                        // 🏘️ GridView أو رسالة
                         Expanded(
                           child: apartments.isEmpty
                               ? const Center(
@@ -134,18 +158,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 )
                               : GridView.builder(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
+                                    horizontal: 16,
+                                  ),
                                   gridDelegate:
                                       const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    mainAxisSpacing: 12,
-                                    crossAxisSpacing: 12,
-                                    childAspectRatio: 0.75,
-                                  ),
+                                        crossAxisCount: 2,
+                                        mainAxisSpacing: 12,
+                                        crossAxisSpacing: 12,
+                                        childAspectRatio: 0.75,
+                                      ),
                                   itemCount: apartments.length,
                                   itemBuilder: (context, index) {
                                     return ApartmentWidget(
-                                        model: apartments[index]);
+                                      model: apartments[index],
+                                    );
                                   },
                                 ),
                         ),
@@ -167,8 +193,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
-
-            // 🔥 Bottom Navigation Bar
             bottomNavigationBar: NavigationBar(
               selectedIndex: currentIndex,
               onDestinationSelected: (index) async {
@@ -176,40 +200,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   currentIndex = index;
                 });
 
-                // ❤️ Favorites
                 if (index == 1) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const FavoritesScreen()),
-                  ).then((_) {
-                    setState(() {
-                      currentIndex = 0; // 🔥 يرجع للهوم
-                    });
-                  });
-                }
-
-                // ➕ Add Apartment
-                if (index == 2) {
-                  final refresh = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const AddApartmentScreen()),
-                  );
-
-                  if (refresh == true) {
-                    context.read<HomeBloc>().add(const LoadApartments());
-                  }
-
-                  setState(() {
-                    currentIndex = 0; // 🔥 يرجع للهوم
-                  });
-                }
-
-                // 📚 My Booking
-                if (index == 3) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const MyBookingPage()),
                   ).then((_) {
                     setState(() {
                       currentIndex = 0;
@@ -217,11 +211,63 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 }
 
-                // 👤 Profile
+                if (index == 2) {
+                  final refresh = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AddApartmentScreen(),
+                    ),
+                  );
+
+                  if (refresh == true) {
+                    context.read<HomeBloc>().add(const LoadApartments());
+                  }
+
+                  setState(() {
+                    currentIndex = 0;
+                  });
+                }
+
+                if (index == 3) {
+                  final token = await getToken();
+
+                  if (token == null || token.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Token not found")),
+                    );
+                    return;
+                  }
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider(
+                        create: (_) => ReservationBloc(
+                          server: ReservationServer(
+                            Dio(BaseOptions(baseUrl: "http://10.0.2.2:8000")),
+                          ),
+                          token: token,
+                        ),
+                        child: const MyReservationsScreen(),
+                      ),
+                    ),
+                  ).then((_) {
+                    setState(() {
+                      currentIndex = 0;
+                    });
+                  });
+                }
+
                 if (index == 4) {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider(
+                        create: (_) =>
+                            UserProfileBloc(server: UserProfileServer()),
+                        child: const ProfileScreen(),
+                      ),
+                    ),
                   ).then((_) {
                     setState(() {
                       currentIndex = 0;
@@ -232,32 +278,42 @@ class _HomeScreenState extends State<HomeScreen> {
               destinations: const [
                 NavigationDestination(
                   icon: Icon(Icons.home_outlined),
-                  selectedIcon:
-                      Icon(Icons.home, color: Color.fromRGBO(127, 86, 217, 1)),
+                  selectedIcon: Icon(
+                    Icons.home,
+                    color: Color.fromRGBO(127, 86, 217, 1),
+                  ),
                   label: 'Home',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.favorite_border),
-                  selectedIcon:
-                      Icon(Icons.favorite, color: Color.fromRGBO(127, 86, 217, 1)),
+                  selectedIcon: Icon(
+                    Icons.favorite,
+                    color: Color.fromRGBO(127, 86, 217, 1),
+                  ),
                   label: 'Favorites',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.add_circle_outline),
-                  selectedIcon: Icon(Icons.add_circle,
-                      color: Color.fromRGBO(127, 86, 217, 1)),
+                  selectedIcon: Icon(
+                    Icons.add_circle,
+                    color: Color.fromRGBO(127, 86, 217, 1),
+                  ),
                   label: 'Add',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.book_outlined),
-                  selectedIcon:
-                      Icon(Icons.book, color: Color.fromRGBO(127, 86, 217, 1)),
+                  selectedIcon: Icon(
+                    Icons.book,
+                    color: Color.fromRGBO(127, 86, 217, 1),
+                  ),
                   label: 'My Books',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.person_outline),
-                  selectedIcon: Icon(Icons.person,
-                      color: Color.fromRGBO(127, 86, 217, 1)),
+                  selectedIcon: Icon(
+                    Icons.person,
+                    color: Color.fromRGBO(127, 86, 217, 1),
+                  ),
                   label: 'Profile',
                 ),
               ],
