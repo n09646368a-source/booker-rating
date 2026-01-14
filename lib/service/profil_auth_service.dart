@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ProfileRepository {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "http://10.0.2.2:8000/api",
+      baseUrl: "http://127.0.0.1:8000/api",
       connectTimeout: const Duration(seconds: 60),
       receiveTimeout: const Duration(seconds: 60),
     ),
@@ -70,7 +70,6 @@ class ProfileRepository {
 
       // رجّع البروفايل للواجهة
       return profile;
-
     } on DioException catch (e) {
       print("❌ DioException: ${e.message}");
       print("❌ Response status: ${e.response?.statusCode}");

@@ -9,6 +9,8 @@ class ApartmentModel {
   final String bathrooms;
   final String apartmentImage;
   final String imageUrl;
+  final num? averageRating;
+  final num? totalReviews;
 
   ApartmentModel({
     required this.id,
@@ -21,6 +23,8 @@ class ApartmentModel {
     required this.bathrooms,
     required this.apartmentImage,
     required this.imageUrl,
+    this.averageRating,
+    this.totalReviews,
   });
 
   factory ApartmentModel.fromJson(Map<String, dynamic> json) {
@@ -32,15 +36,15 @@ class ApartmentModel {
       String url = rawImage.toString();
 
       // 🔥 استبدال كل الحالات المحتملة للمحاكي
-      url = url.replaceFirst("127.0.0.1", "10.0.2.2:8000");
-      url = url.replaceFirst("localhost", "10.0.2.2:8000");
+      url = url.replaceFirst("10.0.2.2", "127.0.0.1");
+      url = url.replaceFirst("localhost", "127.0.0.1");
 
       // إذا الرابط كامل
       if (url.startsWith("http")) {
         finalUrl = url;
       } else {
         // إذا كان مجرد اسم ملف
-        finalUrl = "http://10.0.2.2:8000/storage/$url";
+        finalUrl = "http://127.0.0.1:8000/storage/$url";
       }
     }
 
@@ -55,6 +59,8 @@ class ApartmentModel {
       bathrooms: json['bathrooms']?.toString() ?? '',
       apartmentImage: rawImage ?? '',
       imageUrl: finalUrl,
+      averageRating: json['average_rating'],
+      totalReviews: json['total_reviews'],
     );
   }
 }

@@ -18,3 +18,11 @@ class UpdateReservationEvent extends ReservationEvent {
     required this.endDate,
   });
 }
+
+class RateReservationEvent extends ReservationEvent {
+  final int id;
+  final int rating;
+  final String comment;
+
+  RateReservationEvent(this.id, this.rating, this.comment);
+}

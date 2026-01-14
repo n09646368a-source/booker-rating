@@ -10,14 +10,11 @@ class UserProfileServer {
 
     if (token == null) throw Exception("Missing token");
 
-    final url = Uri.parse("http://10.0.2.2:8000/api/profile");
+    final url = Uri.parse("http://127.0.0.1:8000/api/profile");
 
     final response = await http.get(
       url,
-      headers: {
-        "Authorization": "Bearer $token",
-        "Accept": "application/json",
-      },
+      headers: {"Authorization": "Bearer $token", "Accept": "application/json"},
     );
 
     if (response.statusCode == 200) {

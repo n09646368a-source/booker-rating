@@ -2,11 +2,12 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:booker/model/apartment_model.dart';
+
 //192.168.1.104:8000
 class ApartmentRepository {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "http://10.0.2.2:8000/api",
+      baseUrl: "http://127.0.0.1:8000/api",
       connectTimeout: const Duration(seconds: 60),
       receiveTimeout: const Duration(seconds: 60),
     ),
@@ -63,9 +64,9 @@ class ApartmentRepository {
       print("✅ Status: ${response.statusCode}");
       print("✅ Response: ${response.data}");
       final apartmentJson = response.data['data']['apartment'];
-final imageUrl = response.data['data']['image_url'];
+      final imageUrl = response.data['data']['image_url'];
 
-return ApartmentModel.fromJson(apartmentJson);
+      return ApartmentModel.fromJson(apartmentJson);
     } on DioException catch (e) {
       print("❌ DioException: ${e.message}");
       print("❌ Status: ${e.response?.statusCode}");

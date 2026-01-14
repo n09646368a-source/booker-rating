@@ -8,16 +8,18 @@ class ReservationBloc extends Bloc<ReservationEvent, ReservationState> {
   final String token;
 
   ReservationBloc({required this.server, required this.token})
-      : super(ReservationInitial()) {
+    : super(ReservationInitial()) {
     on<LoadReservationsEvent>((event, emit) async {
       emit(ReservationLoading());
       try {
         final data = await server.getMyReservations(token);
-        emit(ReservationLoaded(
-          active: data["active"]!,
-          cancelled: data["cancelled"]!,
-           all: data["all"]!,
-        ));
+        emit(
+          ReservationLoaded(
+            active: data["active"]!,
+            cancelled: data["cancelled"]!,
+            all: data["all"]!,
+          ),
+        );
       } catch (e) {
         emit(ReservationError(e.toString()));
       }
@@ -45,6 +47,21 @@ class ReservationBloc extends Bloc<ReservationEvent, ReservationState> {
         add(LoadReservationsEvent());
       } catch (e) {
         emit(ReservationError(e.toString()));
+      }
+    });
+
+    on<RateReservationEvent>((event, emit) async {
+      emit(ReservationRatingLoading());
+      try {
+        await server.rateReservation(
+          event.id,
+          event.rating,
+          event.comment,
+          token,
+        );
+        emit(ReservationRatedState());
+      } catch (e) {
+        emit(ReservationErrorState(e.toString()));
       }
     });
   }

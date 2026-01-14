@@ -74,13 +74,49 @@ class ApartmentDetailsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
 
-                    Text(
-                      "${model.apartment.rentPrice} SYP / month",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        color: mainColor,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 8,
+                      children: [
+                        Text(
+                          "${model.apartment.rentPrice} SYP / month",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: mainColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              const WidgetSpan(
+                                child: Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                  size: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text:
+                                    " ${model.apartment.averageRating?.toStringAsFixed(1) ?? '0'} ",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              TextSpan(
+                                text:
+                                    "(${model.apartment.totalReviews?.toString() ?? '0'} reviews)",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
 
@@ -111,13 +147,15 @@ class ApartmentDetailsScreen extends StatelessWidget {
                           ),
                           clipBehavior: Clip.hardEdge,
                           child: CachedNetworkImage(
-                            imageUrl: model.profile.personalImage ?? "",
+                            imageUrl: model.profile?.personalImage ?? "",
                             fit: BoxFit.cover,
                             placeholder: (_, __) => const Center(
                               child: SizedBox(
                                 width: 18,
                                 height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               ),
                             ),
                             errorWidget: (_, __, ___) =>
@@ -127,7 +165,7 @@ class ApartmentDetailsScreen extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            model.profile.fullName,
+                            model.profile?.fullName ?? '',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -138,7 +176,7 @@ class ApartmentDetailsScreen extends StatelessWidget {
                           icon: Icons.phone,
                           color: Colors.green,
                           onTap: () {
-                            print(model.owner.phoneNumber);
+                            print(model.owner?.phoneNumber);
                           },
                         ),
                       ],

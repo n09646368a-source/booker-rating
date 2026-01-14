@@ -4,7 +4,7 @@ import 'package:booker/model/usermodel.dart';
 class SignUpAuthService {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "http://10.0.2.2:8000/api",  
+      baseUrl: "http://127.0.0.1:8000/api",
       connectTimeout: const Duration(seconds: 60),
       receiveTimeout: const Duration(seconds: 60),
     ),
@@ -23,25 +23,24 @@ class SignUpAuthService {
 
       print("✅ Response: ${response.data}");
 
+      return {
+        "success": response.data["success"] ?? false,
+        "message": response.data["message"] ?? "",
+        "error": response.data["error"] ?? "",
+      };
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
         return {
-      "success": response.data["success"] ?? false,
-      "message": response.data["message"] ?? "",
-      "error": response.data["error"] ?? "",
-    };
-  } on DioException catch (e) {
-    if (e.response != null && e.response?.data != null) {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Registration failed",
+          "error": e.response?.data["error"] ?? "Unknown error",
+        };
+      }
       return {
         "success": false,
-        "message": e.response?.data["message"] ?? "Registration failed",
-        "error": e.response?.data["error"] ?? "Unknown error",
+        "message": "Registration failed",
+        "error": e.message ?? "Unknown error",
       };
     }
-    return {
-      "success": false,
-      "message": "Registration failed",
-      "error": e.message ?? "Unknown error",
-    };
   }
 }
-
-  }

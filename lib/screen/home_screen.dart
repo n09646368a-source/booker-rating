@@ -244,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       builder: (_) => BlocProvider(
                         create: (_) => ReservationBloc(
                           server: ReservationServer(
-                            Dio(BaseOptions(baseUrl: "http://10.0.2.2:8000")),
+                            Dio(BaseOptions(baseUrl: "http://127.0.0.1:8000")),
                           ),
                           token: token,
                         ),

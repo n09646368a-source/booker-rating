@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/reservation_bloc/reservation_bloc.dart';
 import '../bloc/reservation_bloc/reservation_event.dart';
+import '../bloc/reservation_bloc/reservation_state.dart';
 import '../model/reservation_model.dart';
 
 class ReservationDetailsScreen extends StatelessWidget {
@@ -31,7 +32,7 @@ class ReservationDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 🔵 أيقونة الشقة
-           /* Container(
+            /* Container(
               height: 100,
               decoration: BoxDecoration(
                 color: Colors.purple.shade50,
@@ -42,46 +43,47 @@ class ReservationDetailsScreen extends StatelessWidget {
               ),
             ),*/
             FutureBuilder(
-  future: ApartmentDetails().fetchApartmentDetails(reservation.apartmentId),
-  builder: (context, snapshot) {
-    if (!snapshot.hasData) {
-      return Container(
-        height: 150,
-        decoration: BoxDecoration(
-          color: Colors.purple.shade50,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Center(
-          child: CircularProgressIndicator(color: Colors.purple),
-        ),
-      );
-    }
+              future: ApartmentDetails().fetchApartmentDetails(
+                reservation.apartmentId,
+              ),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Container(
+                    height: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.purple.shade50,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Center(
+                      child: CircularProgressIndicator(color: Colors.purple),
+                    ),
+                  );
+                }
 
-    final details = snapshot.data!;
-    final imageUrl = details.apartment.imageUrl;
+                final details = snapshot.data!;
+                final imageUrl = details.apartment.imageUrl;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: CachedNetworkImage(
-        imageUrl: imageUrl,
-       // height: 150,
-        width: double.infinity,
-       // fit: BoxFit.cover,
-        placeholder: (_, __) => Image.asset("assets/placeholder.png"),
-        errorWidget: (_, __, ___) => Image.asset("assets/placeholder.png"),
-      ),
-    );
-  },
-),
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    // height: 150,
+                    width: double.infinity,
+                    // fit: BoxFit.cover,
+                    placeholder: (_, __) =>
+                        Image.asset("assets/placeholder.png", height: 50),
+                    errorWidget: (_, __, ___) =>
+                        Image.asset("assets/placeholder.png", height: 50),
+                  ),
+                );
+              },
+            ),
 
             const SizedBox(height: 20),
 
             Text(
               "Apartment #${reservation.apartmentId}",
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 12),
@@ -106,6 +108,11 @@ class ReservationDetailsScreen extends StatelessWidget {
               ),
             ),
 
+            const SizedBox(height: 20),
+
+            if (reservation.getStatusLabel() == "Upcoming")
+              ReviewSection(reservationId: reservation.id),
+
             const Spacer(),
 
             // 🔥 الأزرار تظهر فقط إذا كان الحجز Upcoming
@@ -124,7 +131,10 @@ class ReservationDetailsScreen extends StatelessWidget {
                         backgroundColor: Colors.red,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text("Cancel", style: TextStyle(color: Colors.white)),
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
 
@@ -138,7 +148,9 @@ class ReservationDetailsScreen extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (_) => BlocProvider.value(
                               value: context.read<ReservationBloc>(),
-                              child: UpdateReservationScreen(reservation: reservation),
+                              child: UpdateReservationScreen(
+                                reservation: reservation,
+                              ),
                             ),
                           ),
                         );
@@ -147,7 +159,10 @@ class ReservationDetailsScreen extends StatelessWidget {
                         backgroundColor: const Color(0xFF7F56D9),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text("Update", style: TextStyle(color: Colors.white)),
+                      child: const Text(
+                        "Update",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ],
@@ -165,10 +180,92 @@ class ReservationDetailsScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
           Text(value, style: const TextStyle(fontSize: 16)),
         ],
       ),
+    );
+  }
+}
+
+class ReviewSection extends StatefulWidget {
+  final int reservationId;
+
+  ReviewSection({required this.reservationId});
+
+  @override
+  _ReviewSectionState createState() => _ReviewSectionState();
+}
+
+class _ReviewSectionState extends State<ReviewSection> {
+  final TextEditingController _commentController = TextEditingController();
+  int _rating = 0;
+
+  void _submitReview() {
+    final comment = _commentController.text;
+    if (_rating > 0 && comment.isNotEmpty) {
+      context.read<ReservationBloc>().add(
+        RateReservationEvent(widget.reservationId, _rating, comment),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ReservationBloc, ReservationState>(
+      builder: (context, state) {
+        final isLoading = state is ReservationRatingLoading;
+
+        return Column(
+          children: [
+            Text('Rate this apartment'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (index) {
+                return IconButton(
+                  icon: Icon(
+                    index < _rating ? Icons.star : Icons.star_border,
+                    color: Colors.amber,
+                  ),
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          setState(() {
+                            _rating = index + 1;
+                          });
+                        },
+                );
+              }),
+            ),
+            TextField(
+              controller: _commentController,
+              decoration: InputDecoration(labelText: 'Write a comment'),
+              enabled: !isLoading,
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: isLoading ? null : _submitReview,
+              child: isLoading
+                  ? SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.white,
+                        ),
+                      ),
+                    )
+                  : Text('Submit Review'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

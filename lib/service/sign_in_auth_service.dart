@@ -20,7 +20,7 @@ class SignInAuthService {
       print("📤 Sending: ${user.toMap()}");
 
       final response = await _dio.post(
-        "http://10.0.2.2:8000/api/login",
+        "http://127.0.0.1:8000/api/login",
         data: user.toMap(),
       );
 
@@ -71,10 +71,7 @@ class SignInAuthService {
     } catch (e) {
       print("❌ Unexpected Error: $e");
 
-      return {
-        "message": "Unexpected error: $e",
-        "isApproved": false,
-      };
+      return {"message": "Unexpected error: $e", "isApproved": false};
     }
   }
 }

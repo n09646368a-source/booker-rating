@@ -22,7 +22,8 @@ class BookingModel {
       id: json["id"] ?? 0,
       title: apartment["city"] ?? "Apartment",
       image: apartment["apartment_image"] != null
-          ? "http://10.0.2.2:8000/${apartment["apartment_image"]}":" ",
+          ? "http://127.0.0.1:8000/${apartment["apartment_image"]}"
+          : " ",
       startDate: json["start_date"] ?? "",
       endDate: json["end_date"] ?? "",
       status: json["status"] ?? "",

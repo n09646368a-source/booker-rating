@@ -22,23 +22,23 @@ class ProfileResponceModel {
   });
 
   factory ProfileResponceModel.fromMap(Map<String, dynamic> map) {
-  String fixUrl(dynamic value) {
-  if (value == null || value.toString().isEmpty) return "";
+    String fixUrl(dynamic value) {
+      if (value == null || value.toString().isEmpty) return "";
 
-  String url = value.toString();
+      String url = value.toString();
 
-  // استبدال كل الحالات المحتملة
-  url = url.replaceFirst("127.0.0.1", "10.0.2.2:8000");
-  url = url.replaceFirst("localhost", "10.0.2.2:8000");
+      // استبدال كل الحالات المحتملة
+      url = url.replaceFirst("127.0.0.1", "127.0.0.1:8000");
+      url = url.replaceFirst("localhost", "127.0.0.1:8000");
 
-  // إذا الرابط كامل
-  if (url.startsWith("http")) {
-    return url;
-  }
+      // إذا الرابط كامل
+      if (url.startsWith("http")) {
+        return url;
+      }
 
-  // إذا كان مجرد اسم ملف
-  return "http://10.0.2.2:8000/storage/$url";
-}
+      // إذا كان مجرد اسم ملف
+      return "http://127.0.0.1:8000/storage/$url";
+    }
 
     return ProfileResponceModel(
       firstName: map['first_name'] ?? '',

@@ -6,7 +6,25 @@ class ReservationServer {
 
   ReservationServer(this.dio);
 
-  Future<Map<String, List<ReservationModel>>> getMyReservations(String token) async {
+  Future<void> rateReservation(
+    int id,
+    int rating,
+    String comment,
+    String token,
+  ) async {
+    final response = await dio.post(
+      '/api/rate$id',
+      data: {'rating': rating, 'comment': comment},
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to rate reservation');
+    }
+  }
+
+  Future<Map<String, List<ReservationModel>>> getMyReservations(
+    String token,
+  ) async {
     final res = await dio.get(
       "/api/my-reservations",
       options: Options(headers: {"Authorization": "Bearer $token"}),
@@ -30,11 +48,11 @@ class ReservationServer {
         ? allRaw.map((e) => ReservationModel.fromJson(e)).toList()
         : [];
 
-     return {
-  "active": active as List<ReservationModel>,
-  "cancelled": cancelled as List<ReservationModel>,
-  "all": all as List<ReservationModel>,
-};
+    return {
+      "active": active as List<ReservationModel>,
+      "cancelled": cancelled as List<ReservationModel>,
+      "all": all as List<ReservationModel>,
+    };
   }
 
   // ⭐ إلغاء الحجز
@@ -54,10 +72,7 @@ class ReservationServer {
   }) async {
     await dio.put(
       "/api/update_book/$id",
-      data: {
-        "start_date": startDate,
-        "end_date": endDate,
-      },
+      data: {"start_date": startDate, "end_date": endDate},
       options: Options(headers: {"Authorization": "Bearer $token"}),
     );
   }
