@@ -44,4 +44,46 @@ class FavoritesService {
       throw Exception("Failed to load favorites");
     }
   }
+
+  Future<void> addFavorite(int apartmentId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString("auth_token");
+
+      await dio.post(
+        "/favorites_add/$apartmentId",
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+          },
+        ),
+      );
+      print("✅ Apartment $apartmentId added to favorites");
+    } on DioException catch (e) {
+      print("❌ DioException: ${e.message}");
+      throw Exception("Failed to add favorite");
+    }
+  }
+
+  Future<void> removeFavorite(int apartmentId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString("auth_token");
+
+      await dio.delete(
+        "/favorites_remove/$apartmentId",
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+          },
+        ),
+      );
+      print("✅ Apartment $apartmentId removed from favorites");
+    } on DioException catch (e) {
+      print("❌ DioException: ${e.message}");
+      throw Exception("Failed to remove favorite");
+    }
+  }
 }
