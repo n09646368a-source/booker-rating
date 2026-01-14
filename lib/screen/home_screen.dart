@@ -208,6 +208,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     setState(() {
                       currentIndex = 0;
                     });
+                    // ignore: use_build_context_synchronously
+                    context.read<HomeBloc>().add(const LoadApartments());
                   });
                 }
 
